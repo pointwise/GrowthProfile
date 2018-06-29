@@ -4,6 +4,8 @@ A Glyph script that allows the user to create and apply custom growth profiles t
 
 Three types of growth profiles that can be defined: Laminar, Turbulent, and Custom. Once a type is selected and all the required fields are set, press OK to apply the computed growth profile. If the script is invoked with at least one unstructured block selected, only the selected blocks will be updated; otherwise, the script will enter selection mode.
 
+Note: This script can only be run with Pointwise version V18.1R2 or later.
+
 ## Profile Types
 
 ### Laminar
