@@ -1,11 +1,12 @@
+#############################################################################
 #
-# Copyright 2018 (c) Pointwise, Inc.
-# All rights reserved.
-# 
-# This sample Pointwise script is not supported by Pointwise, Inc.
-# It is provided freely for demonstration purposes only.  
+# (C) 2021 Cadence Design Systems, Inc. All rights reserved worldwide.
+#
+# This sample source code is not supported by Cadence Design Systems, Inc.
+# It is provided freely for demonstration purposes only.
 # SEE THE WARRANTY DISCLAIMER AT THE BOTTOM OF THIS FILE.
 #
+#############################################################################
 
 ###############################################################################
 ##
@@ -49,7 +50,7 @@ set w(ButtonFrame)        .buttonFrame
   set w(CancelButton)     $w(ButtonFrame).cancelButton
   set w(PwLogo)           $w(ButtonFrame).pwLogo
 
-  
+
 set typeOptions [list Laminar Turbulent Custom]
 set color(Valid) "white"
 set color(Invalid) "misty rose"
@@ -61,14 +62,14 @@ set customDS ""
 proc makeWindow { } {
   global w typeOptions CustomRowCount color customDS
   set CustomRowCount 2
-  
+
   set entryWidth 15
-  
+
   # Set Window Title
   wm title . "Growth Profile"
-  
+
   # Create Selection Frame
-  ttk::frame $w(SelectionFrame) -padding "5" 
+  ttk::frame $w(SelectionFrame) -padding "5"
   ttk::label $w(TypeLabel) -text "Type: "
   ttk::combobox $w(TypeSelection) -values $typeOptions -width 14
   $w(TypeSelection) configure -state readonly
@@ -128,9 +129,9 @@ proc makeWindow { } {
   pack $w(ButtonFrame) -anchor center -side bottom -fill x
 
   grid columnconfigure $w(ButtonFrame) 0 -weight 1
-  
+
   bind $w(TypeSelection) <<ComboboxSelected>> { set typeCondition [%W get]; updateParams }
-  
+
   raise .
 }
 
@@ -155,11 +156,11 @@ proc simpleTable { pathName varName args } {
     -readonlyrows {}
     -readonlycols {}
   }
- 
+
   if { [llength $args] == 0 } {
       error "usage: simpleTable pathName varName ?options...?"
   }
- 
+
   set idx -1
   foreach { opt value } $args {
     if { [lsearch $legal $opt] == -1 } {
@@ -170,7 +171,7 @@ proc simpleTable { pathName varName args } {
     }
     set A($opt) $value
   }
- 
+
   # Now build our table
   destroy $pathName
   frame $pathName
@@ -180,7 +181,7 @@ proc simpleTable { pathName varName args } {
       set tw "$pathName.r${r}c$c"
       if { $r < $A(-titlerows) || $c < $A(-titlecols) } {
         if { $::tcl_platform(platform) eq "windows" } {
-          set bg SystemDisabledText 
+          set bg SystemDisabledText
         } else {
           set bg darkgrey
         }
@@ -270,7 +271,7 @@ proc buildTable { rows } {
 #    Updates the parameter frame when it is changed when the user changes the type
 proc updateParams { } {
   global w typeCondition typeOptions
-  
+
   switch $typeCondition {
     Laminar {
       pack forget $w(CustomFrame)
@@ -295,10 +296,10 @@ proc updateParams { } {
 #    Updates the table when it is changed either by adding a row or removing a row
 proc updateCustomTable { } {
   global CustomRowCount w
-  
+
   buildTable $CustomRowCount
   pack $w(CustomFrame) -fill x -side top -anchor center
-  
+
   if { $CustomRowCount < 3 } {
     $w(RemoveButton) configure -state disabled
   } else {
@@ -310,7 +311,7 @@ proc updateCustomTable { } {
 #    Calculates the growth profile for TRex and then assigns profile to selected blocks
 proc CalcGrowthProfile { } {
   global w typeCondition customDS
-  
+
   switch $typeCondition {
     Custom {
       set growthRateSchedule [list]
@@ -337,7 +338,7 @@ proc CalcGrowthProfile { } {
       return [list $initialDs [pw::Grid calculateGrowthRateSchedule $numLinear $numAccel $growthAccel]]
     }
   }
-  
+
   return [list 0.0 [list]]
 }
 
@@ -378,7 +379,9 @@ proc ApplyGrowthProfile { } {
         $wallBC setConditionType Wall
         $wallBC setName "Wall-Profile-[$blk getName]"
       }
-      $wallBC setSpacing $wallDS
+      if {$updateWallDoms && $wallDS > 0.0} {
+        $wallBC setSpacing $wallDS
+      }
 
       $blk setUnstructuredSolverAttribute TRexGrowthProfile [join $completeProfile]
       $blk setUnstructuredSolverAttribute TRexMaximumLayers [llength $completeProfile]
@@ -409,14 +412,14 @@ proc ApplyGrowthProfile { } {
   }
 }
 
-# PROC: getCustomProfileEntries 
+# PROC: getCustomProfileEntries
 #    Returns an array of the data in the Custom Table
 #    Key is the row number and elements are a list of data in the row
 proc getCustomProfileEntries { } {
   global CustomRowCount w
 
   set result [list]
-  
+
   for { set r 1 } { $r < $CustomRowCount } { incr r } {
     set tempList [list]
     for { set c 0 } { $c < 3 } { incr c } {
@@ -434,7 +437,7 @@ proc canCreate { } {
   global w color typeCondition CustomRowCount updateWallDoms
 
   set result 1
-  
+
   switch $typeCondition {
     Custom {
       for { set r 1 } { $result && $r < $CustomRowCount } { incr r } {
@@ -462,7 +465,7 @@ proc canCreate { } {
 #    Checks if there is valid data in entry box
 proc validateEntry { entry widget } {
   global w color
-  
+
   if { [string is double -strict $entry] } {
     $widget configure -background $color(Valid)
   } else {
@@ -488,29 +491,7 @@ proc updateButtons {} {
   }
 }
 
-# PROC setTitleFont
-#   set the font for label widget
-#    Recieves the pathname for the label, the desired scale, and optionally a boolean for bold font
-proc setTitleFont { label scale { bold 0 } } {
-  set font [$label cget -font]
-  set fontSize [font configure $font -size]
-  if { $bold == 1} {
-    set labelFont [font create -family [font actual $font -family] -weight bold \
-    -size [expr {int($scale * $fontSize)}]]
-  } else {
-    set labelFont [font create -family [font actual $font -family] \
-    -size [expr {int($scale * $fontSize)}]]
-  }
-  $label configure -font $labelFont
-}
-
-# PROC grabSelectedBlocks
-#    If unstructured blocks have been selected prior to execution of script
-#    then this proc returns a list of those blocks
-proc grabSelectedBlocks { } {
-}
-
-#  PROC: pwLogo 
+#  PROC: pwLogo
 #    Create the Pointwise Logo
 proc pwLogo { } {
   set logoData {
@@ -546,24 +527,20 @@ rBA7aIAWX+IIK2jhCTFAxxYOMYUHmBEff6hGNRSVRQf4hhBQcGM1XOgIOgoijmbkYhdwwMc+5kAa
 nNCiIAcpSJPR6JCITKQiGREIADs=}
 
   return [image create photo -format GIF -data $logoData]
-}  
+}
 
 makeWindow
 ::tk::PlaceWindow .
 update
 tkwait window .
 
+#############################################################################
 #
-# DISCLAIMER:
-# TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, POINTWISE DISCLAIMS
-# ALL WARRANTIES, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED
-# TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-# PURPOSE, WITH REGARD TO THIS SCRIPT.  TO THE MAXIMUM EXTENT PERMITTED 
-# BY APPLICABLE LAW, IN NO EVENT SHALL POINTWISE BE LIABLE TO ANY PARTY 
-# FOR ANY SPECIAL, INCIDENTAL, INDIRECT, OR CONSEQUENTIAL DAMAGES 
-# WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF 
-# BUSINESS INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE 
-# USE OF OR INABILITY TO USE THIS SCRIPT EVEN IF POINTWISE HAS BEEN 
-# ADVISED OF THE POSSIBILITY OF SUCH DAMAGES AND REGARDLESS OF THE 
-# FAULT OR NEGLIGENCE OF POINTWISE.
+# This file is licensed under the Cadence Public License Version 1.0 (the
+# "License"), a copy of which is found in the included file named "LICENSE",
+# and is distributed "AS IS." TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE
+# LAW, CADENCE DISCLAIMS ALL WARRANTIES AND IN NO EVENT SHALL BE LIABLE TO
+# ANY PARTY FOR ANY DAMAGES ARISING OUT OF OR RELATING TO USE OF THIS FILE.
+# Please see the License for the full text of applicable terms.
 #
+#############################################################################
