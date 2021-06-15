@@ -2,7 +2,7 @@
 #
 # (C) 2021 Cadence Design Systems, Inc. All rights reserved worldwide.
 #
-# This sample source code is not supported by Cadence Design Systems, Inc.
+# This sample script is not supported by Cadence Design Systems, Inc.
 # It is provided freely for demonstration purposes only.
 # SEE THE WARRANTY DISCLAIMER AT THE BOTTOM OF THIS FILE.
 #
@@ -10,7 +10,7 @@
 
 ###############################################################################
 ##
-## GrowthProfile.glf
+## GrowthProfile.py
 ##
 ## Script with Tk interface that generates and applies growth profiles
 ## to T-Rex blocks. Wall boundary conditions must already be applied in order
@@ -36,37 +36,22 @@ glf = GlyphClient()
 pw = glf.get_glyphapi()
 CustomFrame = None
 CustomTable = None
-ButtonRowFrame = None
-AddButton = None
 RemoveButton = None
-CustomApplyFrame = None
-CustomApplyDS = None
-CustomDSLabel = None
 CustomDS = None
 customDS = tk.StringVar()
-ButtonFrame = None
 OkButton = None
-CancelButton = None
-PwLogo = None
 typeCondition = None
-SelectionFrame = None
-TypeLabel = None
 TypeSelection = None
 ComputedFrame = None
-ReLabel = None
 ReEntry = None
-LLabel = None
 LEntry = None
 HLabel = None
 HEntry = None
-ComputedApplyDS = None
 tw_list = []
-typeOptions = ["Laminar", "Turbulent", "Custom"]
 color_valid = "white"
 color_invalid = "misty rose"
 updateWallDoms = tk.BooleanVar()
 updateWallDoms.set(True)
-entryWidth = 15
 CustomRowCount = 2
 PW_Logo = "R0lGODlhiQAYAMZnAAAAAA4ODhQUFBsbGyQkJCwsLDMzMzs7O0REREtLS1RUVFtbW  \
 2JiYmtra3Jycnt7ewBjqgtqrgBmsABrtwBsuRJusBZwsRpzsyF2syJ4tSh7ty1/uQZ1xC+AujeFvD \
@@ -98,19 +83,21 @@ SBmqLFLUxjawluhGcRqcxvG6BTxN9W5gTAQYAIIFgBSry1O57R7oBrWwTZ6tWWNfWOJxbZB/AWwkL \
 AEGQRWkABvywAuOqxg4QAkF+mLkKIigEgaocoBiF8UDlDOIAgZLPHAUaku5Z8rBA7aIAWX+IIK2jh \
 CTFAxxYOMYUHmBEff6hGNRSVRQf4hhBQcGM1XOgIOgoijmbkYhdwwMc+5kAanNCiIAcpSJPR6JCIT \
 KQiGREIADs="
-img = tk.PhotoImage(data=PW_Logo)
 
 
 # DEF: makeWindow
 #    Builds the GUI window
 def makeWindow():
+    entryWidth = 15
+
     # Set Window Title
     root.title('Growth Profile')
 
     # Create Selection Frame   
-    global SelectionFrame, TypeLabel, typeOptions, TypeSelection
+    global TypeSelection
     SelectionFrame= ttk.Frame(root, padding=5)
     TypeLabel = ttk.Label(SelectionFrame, text='Type: ')
+    typeOptions = ["Laminar", "Turbulent", "Custom"]
     TypeSelection = ttk.Combobox(SelectionFrame, values=typeOptions, width=14)
     TypeSelection.configure(state='readonly')
     TypeLabel.grid(row=0, column=0, sticky=W)
@@ -118,10 +105,9 @@ def makeWindow():
     SelectionFrame.pack(side=TOP)
 
     # Create Button Frame
-    global OkButton, ButtonFrame, CancelButton, PW_Logo
+    global OkButton, PW_Logo
     ButtonFrame = ttk.Frame(root, padding=(5,5,5,5))
-    OkButton = ttk.Button(ButtonFrame, text="OK", command=okButtonCommand, \
-        state='disabled')
+    OkButton = ttk.Button(ButtonFrame, text="OK", command=okButtonCommand, state='disabled')
     CancelButton = ttk.Button(ButtonFrame, text="Cancel", command=exit)
     img = tk.PhotoImage(data=PW_Logo)
     PwLogo = tk.Label(ButtonFrame, relief=FLAT, image=img, bd=0)
@@ -137,14 +123,12 @@ def makeWindow():
     CustomFrame = ttk.Frame(root, padding=3)
 
     # Create Custom delta-S Entry Frame
-    global CustomApplyFrame, CustomDSLabel, CustomDS, customDS, CustomApplyDS
+    global CustomDS, customDS
     CustomApplyFrame = ttk.Frame(CustomFrame, padding=3)
-    CustomApplyDS = ttk.Checkbutton(CustomApplyFrame, \
-        text="Update Wall Domains", variable=updateWallDoms, \
+    CustomApplyDS = ttk.Checkbutton(CustomApplyFrame, text="Update Wall Domains", variable=updateWallDoms, \
         command=updateButtons)
     CustomDSLabel = ttk.Label(CustomApplyFrame, text="   Spacing: ", anchor=E)
-    CustomDS = tk.Entry(CustomApplyFrame, textvariable=customDS, \
-        background=color_invalid, width=entryWidth)
+    CustomDS = tk.Entry(CustomApplyFrame, textvariable=customDS, background=color_invalid, width=entryWidth)
     reg = CustomApplyFrame.register(validateEntry)
     CustomDS.configure(validate='key', validatecommand=(reg, '%P', '%W'))
     CustomApplyDS.grid(sticky=EW, padx=3, pady=3, column=0, row=0)
@@ -154,28 +138,23 @@ def makeWindow():
     CustomApplyFrame.pack(padx=3, pady=3, side=BOTTOM, fill=X, anchor=CENTER)
 
     # Create Parameter Frame
-    global ComputedFrame, ReLabel, ReEntry, LLabel, LEntry, HLabel, HEntry, \
-        ComputedApplyDS
+    global ComputedFrame, ReEntry, LEntry, HEntry, HLabel
     ComputedFrame = ttk.Frame(root, padding=5)
     ReLabel = ttk.Label(ComputedFrame, text="Reynolds No.: ", anchor=E)
     reVar = tk.StringVar()
-    ReEntry = tk.Entry(ComputedFrame, textvariable=reVar, \
-        background=color_invalid, width=entryWidth)
+    ReEntry = tk.Entry(ComputedFrame, textvariable=reVar, background=color_invalid, width=entryWidth)
     reg = ComputedFrame.register(validateEntry)
     ReEntry.configure(validate='key', validatecommand=(reg, '%P', '%W'))
     lVar = tk.StringVar()
     LLabel = ttk.Label(ComputedFrame, text="Characteristic Length: ", anchor=E)
-    LEntry = tk.Entry(ComputedFrame, textvariable=lVar, \
-        background=color_invalid, width=entryWidth)
+    LEntry = tk.Entry(ComputedFrame, textvariable=lVar, background=color_invalid, width=entryWidth)
     LEntry.configure(validate='key', validatecommand=(reg, '%P', '%W'))
     hVar = tk.StringVar()
-    HLabel = ttk.Label(ComputedFrame, text="Initial Spacing Factor: ", \
-        anchor=E)
-    HEntry = tk.Entry(ComputedFrame, textvariable=hVar, \
-        background=color_invalid, width=entryWidth)
+    HLabel = ttk.Label(ComputedFrame, text="Initial Spacing Factor: ", anchor=E)
+    HEntry = tk.Entry(ComputedFrame, textvariable=hVar, background=color_invalid, width=entryWidth)
     HEntry.configure(validate='key', validatecommand=(reg, '%P', '%W'))
-    ComputedApplyDS = ttk.Checkbutton(ComputedFrame, text="Update Wall Domains", \
-        variable=updateWallDoms, command=updateButtons)
+    ComputedApplyDS = ttk.Checkbutton(ComputedFrame, text="Update Wall Domains", variable=updateWallDoms, \
+        command=updateButtons)
     ReLabel.grid(sticky=EW, padx=3, pady=3, column=0, row=0)
     ReEntry.grid(sticky=EW, padx=3, pady=3, column=1, row=0)
     LLabel.grid(sticky=EW, padx=3, pady=3, column=0, row=1)
@@ -186,12 +165,10 @@ def makeWindow():
     ComputedFrame.columnconfigure(1, weight=1)
 
     # Create Custom Profile Table Frame
-    global ButtonRowFrame, AddButton, RemoveButton
+    global RemoveButton
     ButtonRowFrame = ttk.Frame(CustomFrame, padding=3)
-    AddButton = ttk.Button(ButtonRowFrame, text="Add Row", \
-        command=addButtonCommand)
-    RemoveButton = ttk.Button(ButtonRowFrame, text="Erase Row", \
-        command=removeButtonCommand)
+    AddButton = ttk.Button(ButtonRowFrame, text="Add Row", command=addButtonCommand)
+    RemoveButton = ttk.Button(ButtonRowFrame, text="Erase Row", command=removeButtonCommand)
     RemoveButton.pack(side=RIGHT, padx=5, pady=5, anchor=CENTER)
     AddButton.pack(side=RIGHT, padx=5, pady=5, anchor=CENTER)
     ButtonRowFrame.pack(side=BOTTOM, fill=X, anchor=CENTER)
@@ -201,7 +178,7 @@ def makeWindow():
 
 
 # DEF: comboBoxBind
-#    Combobox binded callback function
+#    Combobox bind callback function
 def comboBoxBind(event):
     global TypeSelection, typeCondition
     typeCondition = TypeSelection.get()
@@ -257,7 +234,7 @@ def isDouble(str):
 
 # DEF: validateEntry
 #    Checks if there is valid data in entry box
-def validateEntry(entry, widget):       #args?
+def validateEntry(entry, widget):
     global ReEntry, LEntry, HEntry, CustomDS
     if isDouble(entry):
         if widget == str(ReEntry):
@@ -302,8 +279,7 @@ def simpleTable(varName, args):
     legal = ['rows', 'cols', 'titlerows', 'titlecols', 'vcmd']
     A = {'rows': 5, 'cols': 5, 'titlerows': 0, 'titlecols': 0}
     if len(args) == 0:
-        messagebox.showerror('Error', \
-            "usage: simpleTable pathName varName ?options...?")
+        messagebox.showerror('Error', "usage: simpleTable pathName varName ?options...?")
     idx = -1
     for opt, value in args.items():
         bool_checker = False
@@ -320,15 +296,14 @@ def simpleTable(varName, args):
         A[opt] = value
 
     previously_entered = []
-    for x in tw_list:
-        if x.winfo_exists():
-            previously_entered.append(x.get())
+    for widget in tw_list:
+        if widget.winfo_exists():
+            previously_entered.append(widget.get())
     previous_len = len(previously_entered)
     count = 0
 
     # Now build our table
-    NoneType = type(None)
-    if type(CustomTable) != NoneType:
+    if CustomTable != None:
         CustomTable.destroy()
     CustomTable = tk.Frame(CustomFrame)
     rows = A.get('rows')
@@ -342,20 +317,19 @@ def simpleTable(varName, args):
                 else:
                     bg = "darkgrey"
                 text = str(varName.get(str(c)))
-                tw = tk.Label(CustomTable, text=text, relief=FLAT, \
-                    background=bg, foreground="white", width=13, anchor=N)
+                tw = tk.Label(CustomTable, text=text, relief=FLAT, background=bg, foreground="white", width=13, \
+                    anchor=N)
             else:
                 text_var = StringVar()
-                tw = tk.Entry(CustomTable, textvariable=text_var, justify=RIGHT, \
-                    relief=SUNKEN, bd=2, width=9, background=color_invalid)
+                tw = tk.Entry(CustomTable, textvariable=text_var, justify=RIGHT, relief=SUNKEN, bd=2, width=9, \
+                    background=color_invalid)
                 if ((previous_len > 0) and (count < previous_len)):
                     temp = previously_entered[count]
                     tw.insert(0, temp)
                     count = count + 1
                 if A['vcmd'] != "":
                     reg = CustomFrame.register(vcmd)
-                    tw.config(validate='key', validatecommand=(reg, r, c, \
-                        '%P', tw))
+                    tw.config(validate='key', validatecommand=(reg, r, c, '%P', tw))
             rowWidgets.append(tw)
         column_counter = 0
         for widget in rowWidgets:
@@ -371,9 +345,9 @@ def simpleTable(varName, args):
 #    Validate command for table entry boxes
 def vcmd(row, col, val, pathname):
     global tw_list
-    for i in tw_list:
-        if str(pathname) == str(i):
-            index = tw_list.index(i)
+    for widget in tw_list:
+        if str(pathname) == str(widget):
+            index = tw_list.index(widget)
     if col == 0:
         if isInt(val):
             tw_list[index].configure(background=color_valid)
@@ -439,8 +413,7 @@ def updateParams():
 
 
 # DEF: updateCustomTable
-#    Updates the table when it is changed either by 
-#    adding a row or removing a row
+#    Updates the table when it is changed either by adding a row or removing a row
 def updateCustomTable():
     global CustomRowCount, RemoveButton, CustomFrame
     buildTable(CustomRowCount)
@@ -452,8 +425,7 @@ def updateCustomTable():
 
 
 # DEF: CalcGrowthProfile
-#    Calculates the growth profile for TRex and then assigns 
-#    profile to selected blocks
+#    Calculates the growth profile for TRex and then assigns profile to selected blocks
 def CalcGrowthProfile():
     returnList = []
     if typeCondition == "Custom":
@@ -463,7 +435,7 @@ def CalcGrowthProfile():
             nLayers = line[0]
             rate = line[1]
             accel = line[2]
-            for i in range(0,int(nLayers)):
+            for i in range(0, int(nLayers)):
                 growthRateSchedule.append(rate)
                 if isDouble(rate):
                     rate = float(rate)
@@ -478,18 +450,14 @@ def CalcGrowthProfile():
         returnList.extend(growthRateSchedule)
         return returnList
     elif typeCondition == "Laminar":
-        calc = pw.Grid.calculateLaminarGrowth(ReEntry.get(), LEntry.get(), \
-            HEntry.get())
+        calc = pw.Grid.calculateLaminarGrowth(ReEntry.get(), LEntry.get(), HEntry.get())
         returnList.append(calc[3])
-        returnList.extend(pw.Grid.calculateGrowthRateSchedule(calc[0], calc[1], \
-            calc[2]))
+        returnList.extend(pw.Grid.calculateGrowthRateSchedule(calc[0], calc[1], calc[2]))
         return returnList
     elif typeCondition == "Turbulent":
-        calc = pw.Grid.calculateTurbulentGrowth(ReEntry.get(), LEntry.get(), \
-            HEntry.get())
+        calc = pw.Grid.calculateTurbulentGrowth(ReEntry.get(), LEntry.get(), HEntry.get())
         returnList.append(calc[3])
-        returnList.extend(pw.Grid.calculateGrowthRateSchedule(calc[0], calc[1], \
-            calc[2]))
+        returnList.extend(pw.Grid.calculateGrowthRateSchedule(calc[0], calc[1], calc[2]))
         return returnList
     
     emptyList = []
@@ -513,8 +481,8 @@ def ApplyGrowthProfile():
         mask = pw.Display.createSelectionMask(requireBlock='Unstructured')
         root.withdraw()
         result = GlyphVar()
-        if (not pw.Display.selectEntities(result, description=\
-            "Pick block(s) for Growth Profile.", selectionmask=mask)):
+        if (not pw.Display.selectEntities(result, description="Pick block(s) for Growth Profile.", \
+            selectionmask=mask)):
             root.deiconify()
             return
         else:
@@ -536,26 +504,22 @@ def ApplyGrowthProfile():
             for blk in UnsBlks:
                 # Find or create wall boundary condition for this block
                 try:
-                    name = blk.getName()
-                    name = "Wall-Profile-" + name
+                    name = "Wall-Profile-" + blk.getName()
                     wallBC = pw.TRexCondition.getByName(name)
                 except:
                     wallBC = pw.TRexCondition.create()
                     wallBC.setConditionType("Wall")
-                    name = blk.getName()
-                    name = "Wall-Profile-" + name
+                    name = "Wall-Profile-" + blk.getName()
                     wallBC.setName(name)
                 if ((updateWallDoms.get()) and (wallDS_value > 0.0)):
                     wallBC.setSpacing(wallDS_value)
                 completeProfileStr = []
                 for element in completeProfile:
                     completeProfileStr.append(str(element))
-                blk.setUnstructuredSolverAttribute("TRexGrowthProfile", \
-                    ' '.join(completeProfileStr))
-                blk.setUnstructuredSolverAttribute("TRexMaximumLayers", \
-                    len(completeProfile))
-                glf.puts("Applied growth profile with %d layers to block '%s'" % \
-                    (len(completeProfile), str(blk.getName())))
+                blk.setUnstructuredSolverAttribute("TRexGrowthProfile", ' '.join(completeProfileStr))
+                blk.setUnstructuredSolverAttribute("TRexMaximumLayers", len(completeProfile))
+                glf.puts("Applied growth profile with %d layers to block '%s'" % (len(completeProfile), \
+                    str(blk.getName())))
                 if ((updateWallDoms.get()) and (wallDS_value > 0.0)):
                     regs = []
                     nFaces = blk.getFaceCount()
@@ -570,14 +534,12 @@ def ApplyGrowthProfile():
                     trex_list = pw.TRexCondition.getByEntities(regs)
                     # Change all Wall domains to use new boundary condition
                     for bc, reg in zip(trex_list, regs):
-                        if ((bc.getConditionType() == "Wall") and \
-                            (bc != wallBC)):
+                        if ((bc.getConditionType() == "Wall") and (bc != wallBC)):
                             wallBC.apply(reg)
                 solve.end()
         except Exception as e:
             solve.abort()
-            glf.puts("Unexpected error occurred. (%s) No changes were applied." \
-                % e)
+            glf.puts("Unexpected error occurred. (%s) No changes were applied." % e)
 
 
 # DEF: getCustomProfileEntries
@@ -592,7 +554,7 @@ def getCustomProfileEntries():
     col_count = 0
     row = 0
     temp_list = []
-    for i in range(start_index,end_index):
+    for i in range(start_index, end_index):
         temp_list.append(str(tw_list[i].get()))
         col_count = col_count + 1
         if col_count == 3:
@@ -611,23 +573,18 @@ def canCreate():
         children = CustomTable.winfo_children()
         range_end = len(children)
         for i in range(3, range_end):
-            current_color = children[i].cget("background")
-            if (str(current_color) == color_valid):
+            if (str(children[i].cget("background")) == color_valid):
                 result = 1
             else:
                 result = 0
         if result and updateWallDoms.get():
-            result_color = CustomDS.cget("background")
-            if (str(result_color) == color_valid):
+            if (str(CustomDS.cget("background")) == color_valid):
                 result = 1
             else:
                 result = 0
     elif typeCondition == "Laminar" or typeCondition == "Turbulent":
-        r_color = ReEntry.cget("background")
-        l_color = LEntry.cget("background")
-        h_color = HEntry.cget("background")
-        if ((str(r_color) == color_valid) and (str(l_color) == color_valid) and \
-            (str(h_color) == color_valid)):
+        if ((str(ReEntry.cget("background")) == color_valid) and (str(LEntry.cget("background")) == color_valid) and \
+            (str(HEntry.cget("background")) == color_valid)):
             result = 1
         else:
             result = 0
