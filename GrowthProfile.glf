@@ -48,7 +48,7 @@ set w(CustomFrame)        .customFrame
 set w(ButtonFrame)        .buttonFrame
   set w(OkButton)         $w(ButtonFrame).okButton
   set w(CancelButton)     $w(ButtonFrame).cancelButton
-  set w(PwLogo)           $w(ButtonFrame).pwLogo
+  set w(CadenceLogo)      $w(ButtonFrame).cadenceLogo
 
 
 set typeOptions [list Laminar Turbulent Custom]
@@ -122,8 +122,8 @@ proc makeWindow { } {
   ttk::frame $w(ButtonFrame) -padding "5 5 5 5"
   ttk::button $w(OkButton) -text "OK" -command { ApplyGrowthProfile; exit } -state disabled
   ttk::button $w(CancelButton) -text "Cancel" -command { exit }
-  label $w(PwLogo) -image [pwLogo] -bd 0 -relief flat
-  pack $w(PwLogo) -side left -anchor w
+  label $w(CadenceLogo) -image [cadenceLogo] -bd 0 -relief flat
+  pack $w(CadenceLogo) -side left -anchor w
   pack $w(CancelButton) -side right -anchor e
   pack $w(OkButton) -side right -anchor e
   pack $w(ButtonFrame) -anchor center -side bottom -fill x
@@ -491,40 +491,25 @@ proc updateButtons {} {
   }
 }
 
-#  PROC: pwLogo
-#    Create the Pointwise Logo
-proc pwLogo { } {
+#  PROC: cadenceLogo
+#    Create the Cadence Logo
+proc cadenceLogo { } {
   set logoData {
-R0lGODlhiQAYAMZnAAAAAA4ODhQUFBsbGyQkJCwsLDMzMzs7O0REREtLS1RUVFtbW2JiYmtra3Jy
-cnt7ewBjqgtqrgBmsABrtwBsuRJusBZwsRpzsyF2syJ4tSh7ty1/uQZ1xC+AujeFvDiFvT2IvjGQ
-1EWNwUiPwk6TxEqVylSXxleYx1iZx1ybyGGeymSgy26mz3Coz2On122q1Wqt3XSq0Xuu03+x1Xqx
-2HS04n+544ODg4qKipSUlJubm6Ojo6ysrLS0tLu8vIS01oi214q32I252ZK825i+2pzC3pXB4ZnI
-6qPG4KXI4qvM46HL6rDP5bTR5rzW6b/Y6sTExMzMzM/R0dPT09ra2sTb68re7M/h79Di78ni9NXl
-8d3q9N/u+OTk5Ovr6+Pu9ubw9+3z9+Xx+ery+PLy8vH3+vX5+///////////////////////////
-/////////////////////////////////////////////////////////////////////////yH5
-BAEKAH8ALAAAAACJABgAAAf+gH+Cg4SFhoeIiYqLjI2Oj5CRkpOUlZaPPDs5hDkKnp8KCzuKTk1K
-f2BKp4ZQoF1/C6CgDlGDN7K4Cj5QCZ4NhlSGO58JXVGfC4NdoKOGt7mgPn/DDg43UIIJANvc3AiH
-QlpBJE1DKDJFKUGFOt2v3fDbDoIG8fEPXd21ygOvhAHd/uQIKKgdt3mGCNiDNwqHjwVQdOAQxGDh
-NgWEtKRQAUTLDywrIEDwkCTCB0I83P0BaBHAjT/aWgL4dYBbskEDJw6K0o3BnxvcAgzC0U3HIQQy
-AfjoooPKAR9RNv2p2FLKICJbkvz4cubHmC9CZlQ5EwEDF0Epub1LOjXprx7+KgUpFECI6rYpf4hu
-E4q2m85CSGWOeoBjCg8GzQJbfCBIiZgiT55wNaNCCRASKJpsYdGkr9o/SQH0aJAU4x8B3HTC3cZj
-UDcDgvQC4PsnH7cBhwoknQilAQ8HRgX5yEFcB/GY23wuGSEDAhIkV84AUXElgsgTQUAU8bztFcuZ
-OsLf+O6ACo/zPdDzSJ8e78/bgmpuI1CwWzPZtP8o6JbAUJQeAAYoIID+/LGPIrZtk0wIQVRwwRko
-mPCDCDKUoUQIEMRQhEhH/JFWdytx454g+yUHSYJK6afPH/LNNlRQhKA40yWFGBPFjTcu0M1LHDT4
-xBBMNHHCGUxAMEIYJ/z+0IJIMHioUjc91MXNL8pAYSU2R3HTHxXd/NLli3sVMlA3jA1CBY5oplmg
-ISVa1IMVFBTxhQoZbvGDEiyIBIEWZuj5wh+rgQglITpuQ2Vs3YxISKAAvNKiAIXeBaaLhTwAT3As
-JoWpIZEu9EcSElxRhUgt5LnnBSIp0QWdENDwhw8qfRflIJEeKlA3wRyi0DaMMfoaIfgdAlSi2Wia
-iF32YFQDBEyEIdIQzUHwgwwYjBHSGCNAYAQRUzzJzayC1EqIQdvkakiwfwxgT2uT5keIpdzQB1NS
-zRyCLDwHCGIDBEWEQ8IQrJJgRhOsatAEEyXIwOVnshI65bi4IoJilMP+duNuxe4S0qJo88r0lyF2
-DbDDyDtg+YcWKwgBAQhJbGGFEk4MgQWrpJ4xQRULC/qtw4ZyEjEibeYrIwBltpsIiv0hRwBxOeDA
-dA6KFmIXbImcoKcMSHyAqgVW6HlBE0+48AcUse5M68ODkAuAuaxE3CaIwMKYSIv5ttlfJHYVoMiG
-Iqnwg57MLglCGSZAAIaTnw16ds9p/4zIrgD41C03+RaCLiLqbvNNm9/gzY3eiXzBBAgQXIAE4BUw
-EcQXJIiUBeIgNrz4jDg5fsiYtOu2DbhGH0IFcpF3DEDnkOStSNZVILFCFRtYsEEKPxBpHQQycNco
-aGaHi3Z93LB9CEvq/qRF17lyT0EAAQMI8N3OwA/g/vvps2vv54tka4IQX2xxcDopECFSCoP40PVk
-pz3Gca9ci6jI3QSBmqLFLUxjawluhGcRqcxvG6BTxN9W5gTAQYAIIFgBSry1O57R7oBrWwTZ6tWW
-NfWOJxbZB/AWwkLAEGQRWkABvywAuOqxg4QAkF+mLkKIigEgaocoBiF8UDlDOIAgZLPHAUaku5Z8
-rBA7aIAWX+IIK2jhCTFAxxYOMYUHmBEff6hGNRSVRQf4hhBQcGM1XOgIOgoijmbkYhdwwMc+5kAa
-nNCiIAcpSJPR6JCITKQiGREIADs=}
+R0lGODlhfwAYAHAAACH5BAEAAIEALAAAAAB/ABgAhwAAAOkcLOocLdokJIaGhouLi4qKigsLCwoKCjY2NiwsLPBmcfFmctptbVRUVC8vL/9/f1dXV1hYWI6
+OjpiYmP///3R0dCsrKxUVFYSEhFBQUA0NDcTExCQkJAQEBKKioj4+PlJSUn9/fzAwMAwMDBwcHAUFBSYmJmpqah0dHRISEgMDAyoqKp2dnZKSkgEBAZqamh
+MTE6urq5mZmYKCgmNjY4+Pj5GRkUdHRwcHBwICAg4ODh4eHjg4OIWFhWxsbDU1NQgICGJiYqCgoBgYGAkJCb+/v9jY2OLi4gYGBjQ0NJ+fn3x8fC0tLRoaG
+s7OzmBgYHFxcScnJy4uLhkZGTo6Onh4eBQUFGVlZX5+fjExMczMzD8/P1lZWbS0tOTk5CIiIhAQEGdnZ4yMjLm5uaqqqm5ubhEREXd3d2RkZF1dXWFhYVFR
+UU5OTqOjo9HR0Z6enhsbG7y8vNra2tDQ0MnJyaWlpUhISIODgw8PD8DAwKSkpOHh4RcXF2trayAgIFpaWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAj/AAM
+JHEiwoMAACBMqNMiwocOHECNKnGiQAAACFAcq3Bggo8ePIEMWxHhGCRiPDFKqXJkRgEsAImPKdAhTSSCYMz++xJmzZ0wHgWbM4OlT4s6iSEG+TDrxKNOnUH
+s6jUpV4pkzSxvudHkyIlYAZ25mpfmyK9mtWGdIBLNTrdaXJSGi2UqUIN2xb+/WJYjlLsa8d4E+pOvWII67g+m+tTkXr0G9ju2+tBh5IGSXibeWYQhXyVfMD
+D9j8fjSJmCBW/OafbmZ89ipBtm6DJt5dCDZe1HP1llZLGjdvwtOVdJ7OGyCnyPirUw8OMXjlpcXd4lDcm7fRKED9yo9d1mKYD5P3Q+u3TcWHErQj89e+TBY
+5S/Rq3cO/Ppjvaej06+P2DX5yuVZh999+xEIABrYMSQHbOVddh2DAPYmYH/CSTgQbvo92J2GAMiX3of51ReahcCBgYN8J5pWYYHW0Zagf+wVSOKKMebW13s
+QBVgQhjm6ZNuLBgoYInz/ychihs+5JNhZPDW4YUNfLUlkjUPmRdFnKsKIZIjlidfUkyPuJtAWMLbWo2IGUmiQeGjCmNqQAd5VGI1vulkgmzpe9hCe9kF4JG
+ENNdcmYFkWNJSagOkYyI1cZUblQ7jZJ5Cg9gUEADs=}
 
   return [image create photo -format GIF -data $logoData]
 }
